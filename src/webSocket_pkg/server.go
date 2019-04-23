@@ -9,6 +9,14 @@ import (
 )
 
 /*
+对已有的API进行封装
+	1.定义新的结构体, 将已有的结构体嵌套
+	2.在外部调用接口(API)内嵌套已有结构体的api
+进程间实现信息通信
+	1.结构体: inChan/outChan
+	2.线程安全: sync
+*/
+/*
 封装WebSocket
 	缺乏工程化的设计
 		其他代码模块, 无法直接操作WebSocket连接
@@ -108,7 +116,7 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 			err error
 		)
 		for {
-			// 假使发送消息的时候, 连接出错, 则推出
+			// 假使发送消息的时候, 连接出错, 则退出
 			if err = conn.WriteMessage([]byte("heartbeat")); err != nil {
 				return
 			}
@@ -117,6 +125,7 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 	}()
 	// websocket.Conn
 	// websocket传递的数据类型: Text, Binary
+
 	for {
 		// 读取消息
 		if data, err = conn.ReadMessage(); err != nil {
@@ -128,6 +137,7 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 			goto ERR
 		}
 	}
+
 ERR:
 	conn.Close()
 }
